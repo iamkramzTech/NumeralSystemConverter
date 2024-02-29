@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace NumeralSystemConverter
 {
@@ -49,9 +51,40 @@ namespace NumeralSystemConverter
         /// </summary>
         /// <param name="binary">A string representing a binary number.</param>
         /// <returns>A string representing the decimal equivalent of the binary number.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="binaryNumber"/> is null or empty.
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="binaryNumber"/> has characters other than 1 and 0.
         public static int BinaryToDecimal(string binaryNumber)
         {
-            return Convert.ToInt32(binaryNumber, 2);
+            // check if input is null or empty
+            if (string.IsNullOrEmpty(binaryNumber))
+            {
+                throw new ArgumentNullException(nameof(binaryNumber), "Input must not be null or empty");
+            }
+
+            // Regular Expression to Check if the input is a valid binary number
+            if (!Regex.IsMatch(binaryNumber, @"^[01]+$"))
+            {
+                throw new ArgumentOutOfRangeException(nameof(binaryNumber), "Input must consist of '0' and '1' only");
+            }
+
+
+            var decimalNumberEquivalent = 0;
+            var binaryLength = binaryNumber.Length;
+            var digit = 0;
+            // Iterate over each digit in the binary number.
+            for (int iterator = 0; iterator < binaryLength; iterator++)
+            {
+                // Convert the digit from char to int and calculate its contribution to the decimal number
+                digit = binaryNumber[binaryLength- iterator-1] - '0';
+                // '<<' means bitwise left shift  operator
+                // It's a common and efficient technique for powers of 2,
+                // which is frequently used in binary manipulation.
+                decimalNumberEquivalent = decimalNumberEquivalent + digit * (1<<iterator);
+
+                //can also use Math.Pow instead of bitwise left shift operator
+               // decimalNumberEquivalent = decimalNumberEquivalent + digit * (int)(Math.Pow(2,iterator));
+            }
+            return decimalNumberEquivalent;
         }
     }
 }
