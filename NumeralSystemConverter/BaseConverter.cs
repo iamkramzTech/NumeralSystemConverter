@@ -86,5 +86,40 @@ namespace NumeralSystemConverter
             }
             return decimalNumberEquivalent;
         }
+
+        public static string DecimalToOctal(int decimalNumber)
+        {
+
+            if (decimalNumber < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(decimalNumber), "Input must be a non - negative integer.");
+            }
+            if (decimalNumber == 0)
+            {
+                return "0";
+            }
+
+            var octalNumber = new int[32];
+            StringBuilder octalNumberString = new StringBuilder();
+            int counter = 0;
+
+            while (decimalNumber > 0)
+            {
+                octalNumber[counter] = decimalNumber % 8;
+                decimalNumber /= 8;
+                counter += 1; //increment counter
+            }
+
+            // Construct the binary string in reverse order
+            for (var index = counter - 1; index >= 0; index--)
+            {
+                octalNumberString.Append(octalNumber[index]);
+            }
+            return octalNumberString.ToString();
+
+            ////built-in function to Convert decimal number
+            ////to its octal representation
+            //return Convert.ToString(decimalNumber, 8);
+        }
     }
 }
