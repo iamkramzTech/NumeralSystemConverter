@@ -308,7 +308,7 @@ namespace NumeralSystemConverter
             {
                 return true;
             }
-
+            //returns false if the conditional statement is false
             return false;
         }
 
