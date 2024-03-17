@@ -5,24 +5,22 @@ using System.Text.RegularExpressions;
 namespace NumeralSystemConverter
 {
     /// <summary>
-    /// A static class for Base Number Conversion
-    /// static class means cannot be instantiated to create an object
+    /// static class for 32 bits signed integer Base Conversion. It can handle two's complement for negative values
+    /// This class cannot be inherited and instantiated.
     /// </summary>
     public static class BaseConverter
     {
 
+        #region -- Decimal To Binary static method --
+
         /// <summary>
-        /// Converts a decimal number to its 32bits binary equivalent as a string.
+        /// Converts a decimal number to its 32bits signed integer to binary equivalent as a string.
         /// </summary>
         /// <param name="decimalNumber">The non-negative integer to convert. Must be a non-negative integer.</param>
         /// <returns>A string representing the binary equivalent of the decimal number.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="decimalNumber"/> is negative.</exception>
+        /// <exception cref="OverflowException">Thrown if <paramref name="decimalNumber"/> is outside the range of 32-bits signed integer</exception>
         public static string DecimalToBinary(int decimalNumber)
-        {
-            //if (decimalNumber < 0)
-            //{
-            //    throw new ArgumentOutOfRangeException(nameof(decimalNumber), "Input must be a non - negative integer.");
-            //}
+        {        
             if (decimalNumber == 0)
             {
                 return new string('0', 32); // Return 32 zeros for 0
@@ -94,22 +92,20 @@ namespace NumeralSystemConverter
             return binaryNumberString.ToString();
         }
 
+        #endregion
+
+        #region -- Binary To Decimal static method --
         /// <summary>
-        /// Converts a binary number to its decimal equivalent.
+        /// Converts a 32 bits length binary to its decimal equivalent.
         /// </summary>
         /// <param name="binary">A string representing a binary number.</param>
         /// <returns>A string representing the decimal equivalent of the binary number.</returns>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="binaryNumber"/> is null or empty.
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="binaryNumber"/> has characters other than 1 and 0.
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="binaryNumber"/> is null or empty.</exception>
+        /// <exception cref="FormatException">Thrown if <paramref name="binaryNumber"/> is invalid binary number</exception>
+        /// <exception cref="OverflowException">Thrown if <paramref name="binaryNumber"/> is more than 32 bits capacity</exception>
         public static int BinaryToDecimal(string binaryNumber)
         {
-
-            /*
-             ! Issue Fixed
-            [TestCase("100111111111111111111111111111101010111", -90)] this is not correct test must fail
-            Handle the numbers outside 32 bit to not be converted value is too large
-            */
-
+         
             // Check if the binary number is more than 32 bits
             if (binaryNumber.Length > 32)
             {
@@ -148,64 +144,54 @@ namespace NumeralSystemConverter
             }
             return decimalNumberEquivalent;
 
-
-
-
         }
-
+        #endregion
+        #region -- Decimal To Octal static method --
         /// <summary>
-        /// Converts a decimal number to its octal representation
+        /// Converts a 32 bits signed integer to its octal representation
         /// </summary>
         /// <param name="decimalNumber">A base 10 decimal number integer</param>
-        /// <returns>EQuivalent Octal number</returns>
-        ///  <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="decimalNumber"/> is out of range.
+        /// <returns>Equivalent Octal number</returns>
+        /// <exception cref="OverflowException">Thrown if <paramref name="decimalNumber"/> is outside the range of 32-bits signed integer</exception>
         public static string DecimalToOctal(int decimalNumber)
         {
-
-            //if (decimalNumber < 0)
-            //{
-            //    throw new ArgumentOutOfRangeException(nameof(decimalNumber), "Input must be a non - negative integer.");
-            //}
+            if (decimalNumber == 0)
+            {
+                return "00000000000";
+            }
             if (CheckInt32NumberOverflow(decimalNumber))
             {
                 throw new OverflowException("Value was outside the range of a 32-bit signed integer");
             }
-            if (decimalNumber == 0)
-            {
-                return "0";
-            }
 
-            var octalNumber = new int[32];
+            string binaryString = DecimalToBinary(decimalNumber);
             StringBuilder octalNumberString = new StringBuilder();
-            int counter = 0;
 
-            while (decimalNumber > 0)
+            // Process every 3 bits in the binary string
+            for (int i = binaryString.Length; i > 0; i -= 3)
             {
-                octalNumber[counter] = decimalNumber % 8;
-                decimalNumber /= 8;
-                counter += 1; //increment counter
+                int octalDigit = 0;
+                for (int bit = Math.Max(i - 3, 0); bit < i; bit++)
+                {
+                    octalDigit = (octalDigit << 1) + (binaryString[bit] - '0');
+                }
+                octalNumberString.Insert(0, octalDigit.ToString());
             }
 
-            // Construct the binary string in reverse order
-            for (var index = counter - 1; index >= 0; index--)
-            {
-                octalNumberString.Append(octalNumber[index]);
-            }
             return octalNumberString.ToString();
 
-            ////built-in function to Convert decimal number
-            ////to its octal representation
-            //return Convert.ToString(decimalNumber, 8);
         }
+        #endregion
 
+        #region -- Octal To Decimal static method --
         /// <summary>
         /// Convert an Octal number to its Decimal equivalent
         /// </summary>
         /// <param name="octalNumber">A string representing a binary number.</param>
         /// <returns>Equivalent Decimal number</returns>
-        /// <exception cref="ArgumentNullException">throws when argument is null or empty</exception>
-        /// <exception cref="FormatException">throws when argument is invalid octal number</exception>
-        /// /// <exception cref="FormatException">throws when argument is large or too small for integer datatype capacity</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="octalNumber"/> is null or empty</exception>
+        /// <exception cref="FormatException">Thrown if <paramref name="octalNumber"/>is invalid octal number</exception>
+        /// <exception cref="OverflowException">Thrown if <paramref name="octalNumber"/> is more than 32 bits capacity</exception>
         public static int OctalToDecimal(string octalNumber)
         {
 
@@ -240,13 +226,14 @@ namespace NumeralSystemConverter
 
 
         }
-
+        #endregion
+        #region -- Decimal To Hexadecimal static method --
         /// <summary>
-        /// Convert Decimal Number to hexadecimal Base 16 equivalent
+        /// Converts a 32 bits signed integer to hexadecimal Base 16 equivalent
         /// </summary>
-        /// <param name="decimalNumber"></param>
-        /// <returns></returns>
-        /// <exception cref="OverflowException"></exception>
+        /// <param name="decimalNumber">decimal number</param>
+        /// <returns>hexadecimal equivalent</returns>
+        /// <exception cref="OverflowException">Thrown if <paramref name="decimalNumber"/> is more than 32 bits capacity</exception>
         public static string DecimalToHexadecimal(int decimalNumber)
         {
             if (CheckInt32NumberOverflow(decimalNumber))
@@ -255,20 +242,34 @@ namespace NumeralSystemConverter
             }
             if (decimalNumber==0)
             {
-                return "0";
+                return "00000000";
             }
-            var hexaDecNumber = Convert.ToString(decimalNumber, 16);
+            string binaryString = DecimalToBinary(decimalNumber);
+            StringBuilder hexNumberString = new StringBuilder();
 
-            return hexaDecNumber.ToUpper();
+            // Process every 4 bits in the binary string
+            for (int i = binaryString.Length; i > 0; i-=4)
+            {
+                var hexDigit = 0;
+                for (int bit = Math.Max(i - 4, 0); bit < i; bit++)
+                {
+                    hexDigit = (hexDigit << 1) + (binaryString[bit] - '0');
+                }
+                hexNumberString.Insert(0, HexDigitToChar(hexDigit));
+            }
+            return hexNumberString.ToString();
         }
+        #endregion
 
+        #region -- Hexadecimal To Decimal static method --
         /// <summary>
-        /// Convert HexaDecimal Number to Decimal Base10 equivalent
+        /// Convert 32 bits HexaDecimal Number to Decimal Base10 equivalent
         /// </summary>
-        /// <param name="hexadecimalNumber"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="OverflowException"></exception>
+        /// <param name="hexadecimalNumber">hexadecimal string</param>
+        /// <returns>decimal equivalent</returns>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="hexadecimalNumber"/>input is null or empty</exception>
+        /// <exception cref="FormatException">Thrown if <paramref name="hexadecimalNumber"/>is not valid hexadecimal number</exception>
+        /// <exception cref="OverflowException">THrown if <paramref name="hexadecimalNumber"/> is more than int32 capacity</exception>
         public static int HexadecimalToDecimal(string hexadecimalNumber)
         {
             // check if input is null or empty
@@ -296,7 +297,9 @@ namespace NumeralSystemConverter
             return decimalValue;
             
         }
+        #endregion
 
+        #region -- Check overflow exception --
         /// <summary>
         /// Check if integer value is less than minimum capacity of a 32 bits integer or greater than maximum capacity of 32 bits integer
         /// </summary>
@@ -311,7 +314,19 @@ namespace NumeralSystemConverter
             //returns false if the conditional statement is false
             return false;
         }
+        #endregion
 
-
+        #region -- Method Helper numeric digits into hex character --
+        /// <summary>
+        /// a helper method sed to convert a numeric digit into its hexadecimal character equivalent.
+        /// </summary>
+        /// <param name="digit">hexDigits</param>
+        /// <returns>equivlent character</returns>
+        private static char HexDigitToChar(int digit)
+        {
+            if (digit >= 0 && digit <= 9) return (char)('0' + digit);
+            return (char)('A' + (digit - 10));
+        }
+        #endregion
     }
 }
