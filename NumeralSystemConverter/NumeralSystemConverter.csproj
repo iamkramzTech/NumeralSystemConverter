@@ -9,6 +9,18 @@
 		<!-- <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile> -->
 		<!-- Minimize the debug information for Release builds -->
 		<DebugType Condition="'$(Configuration)' == 'Release'">pdbonly</DebugType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Version>1.0.1</Version>
+		<Authors>iamkramzTech</Authors>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/iamkramzTech/NumeralSystemConverter.git</RepositoryUrl>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 </Project>

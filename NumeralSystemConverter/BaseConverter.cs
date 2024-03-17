@@ -98,7 +98,7 @@ namespace NumeralSystemConverter
         /// <summary>
         /// Converts a 32 bits length binary to its decimal equivalent.
         /// </summary>
-        /// <param name="binary">A string representing a binary number.</param>
+        /// <param name="binaryNumber">A string representing a binary number.</param>
         /// <returns>A string representing the decimal equivalent of the binary number.</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="binaryNumber"/> is null or empty.</exception>
         /// <exception cref="FormatException">Thrown if <paramref name="binaryNumber"/> is invalid binary number</exception>
