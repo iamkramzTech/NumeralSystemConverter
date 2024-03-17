@@ -222,10 +222,10 @@ namespace NumeralSystemConverterTest
         /// </summary>
         /// <param name="decimalNumber">The base 10 number to convert.</param>
         /// <param name="expectedOctalNumber">The expected decimal equivalent of the octal number.</param>
-        [TestCase(0, "0")]
-        [TestCase(1073741823, "7777777777")]
-        [TestCase(999999999, "7346544777")]
-        [TestCase(99999999, "575360377")]
+        [TestCase(0, "00000000000")]
+        [TestCase(1073741823, "07777777777")]
+        [TestCase(999999999, "07346544777")]
+        [TestCase(99999999, "00575360377")]
        // [TestCase(9223372036854775807, "777777777777777777777")]
         public void DecimalToOctalTest(int decimalNumber, string expectedOctalNumber)
         {
@@ -291,11 +291,10 @@ namespace NumeralSystemConverterTest
         /// <param name="octalNumber">string octalNUmber</param>
         /// <param name="expectedDecimalEquivalent">int decimal equivalent</param>
 
-
-        [TestCase("0", 0)]
-        [TestCase("377", 255)]
-        [TestCase("7777777777", 1073741823)]
-        [TestCase("17777777777", 2147483647)]
+        [TestCase("00000000000", 0)]
+        [TestCase("07777777777", 1073741823)]
+        [TestCase("07346544777", 999999999)]
+        [TestCase("00575360377", 99999999)]
         public void OctalToDecimalTest(string octalNumber, int expectedDecimalEquivalent)
         {
             var result = BaseConverter.OctalToDecimal(octalNumber);
@@ -360,12 +359,13 @@ namespace NumeralSystemConverterTest
         /// <param name="decimalNumber">integer decimalNumber</param>
         /// <param name="expectedHexadecimalEquivalent">string expected hexadecimal equivalent</param>
 
-        [TestCase(0, "0")]
-        [TestCase(255, "FF")]
+        [TestCase(0, "00000000")]
+        [TestCase(255, "000000FF")]
         [TestCase(-255, "FFFFFF01")]
-        [TestCase(11, "B")]
+        [TestCase(11, "0000000B")]
         [TestCase(Int32.MaxValue, "7FFFFFFF")]
         [TestCase(-Int32.MaxValue, "80000001")]
+        [TestCase(-214748364, "F3333334")]
         [TestCase(Int32.MinValue, "80000000")]
         public void DecimalToHexadecimalTest(int decimalNumber, string expectedHexadecimalEquivalent)
         {
@@ -382,10 +382,14 @@ namespace NumeralSystemConverterTest
         /// <param name="hexadecimalNumber">Hexadecimal string</param>
         /// <param name="expectedHexadecimalEquivalent">integer expected decimal equivalent</param>
 
+        [TestCase("00000000",0)]
+        [TestCase("000000FF", 255)]
+        [TestCase("FFFFFF01", -255)]
+        [TestCase("0000000B", 11)]
         [TestCase("7FFFFFFF",Int32.MaxValue)]
-        [TestCase("80000001",-Int32.MaxValue)]
+        [TestCase("80000001", -Int32.MaxValue)]
+        [TestCase("F3333334", -214748364)]
         [TestCase("80000000", Int32.MinValue)]
-        [TestCase("0", 0)]
         public void HexadecimalToDecimalTest(string hexadecimalNumber, int expectedHexadecimalEquivalent)
         {
             var result = BaseConverter.HexadecimalToDecimal(hexadecimalNumber);
